@@ -1,11 +1,18 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
+import { UserModel } from './db.js'
 
 const app = express();
 
 app.post("api/v1/signup", (req, res) => {
-    
+    // zod validation
+    const username = req.body.username;
+    const password = req.body.password;
+
+    UserModel.create({
+        userName: username,
+        password: password
+    })
 })
 
 app.post("api/v1/signin", (req, res) => {
@@ -29,5 +36,5 @@ app.post("api/v1/brain/share", (req, res) => {
 })
 
 app.get("api/v1/brain/:shareLink", (req, res) => {
-    
+
 })
