@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { UserModel } from './db.js'
+import { ContentModel, UserModel } from './db.js'
+import { userMiddleware } from './middleware.js';
 
 const JWT_SECRET = 'kldfkh238efsfTWER323@#SD%3se';
 
@@ -44,12 +45,35 @@ app.post("/api/v1/signin", (req, res) => {
 
 })
 
-app.get("/api/v1/content", (req, res) => {
+app.post("/api/v1/content", userMiddleware, async (req, res) => {
+    const link = req.body.link;
+    const title = req.body.title;
+    const type = req.body.type;
 
+    await ContentModel.create({
+        link,
+        title,
+        // type,
+        // @ts-ignore
+        userId: req.userId,
+        tags: []
+    })
+    res.json({
+        msg: 'Content Added'
+    })
+    
 })
 
-app.post("/api/v1/content", (req, res) => {
-
+app.get("/api/v1/content", userMiddleware, async (req, res) => {
+    // @ts-ignore
+    const userId = req.userId;
+    const content = await ContentModel.find({
+        userId: userId
+    }).populate("userId", "username")
+    
+    res.json({
+        content
+    })
 })
 
 app.delete("/api/v1/content", (req, res) => {
